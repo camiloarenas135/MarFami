@@ -88,7 +88,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
             <div className="flex items-center gap-5">
               {/* Instagram */}
               <a
-                href="https://www.instagram.com/marfamishop?igsh=YjR5cHh3MGZ5dGQw"
+                href="https://www.instagram.com/marfamishop/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-[#e1306c] transition-all duration-200 hover:scale-110 active:scale-95"
