@@ -56,24 +56,20 @@ export default function App() {
   // Search query state (elevated to App level to share with Header)
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. LOAD PRODUCTS ON MOUNT (With automatic fallback)
+  // 1. LOAD PRODUCTS STRICTLY FROM SUPABASE
   const fetchProducts = async () => {
     setIsLoadingProducts(true);
     try {
       const { data, error } = await supabase.from('products').select('*');
       if (error) {
-        console.warn('Supabase query returned error, using fallback catalog:', error.message || error);
-        setProducts(mockDb.getProducts());
+        console.error('Error al obtener productos desde Supabase:', error.message || error);
         return;
       }
-      if (data && data.length > 0) {
+      if (data) {
         setProducts(data);
-      } else {
-        setProducts(mockDb.getProducts());
       }
     } catch (err) {
-      console.error('Error fetching catalog products, using fallback:', err);
-      setProducts(mockDb.getProducts());
+      console.error('Error fetching catalog products:', err);
     } finally {
       setIsLoadingProducts(false);
     }

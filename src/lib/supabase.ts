@@ -18,9 +18,20 @@ declare global {
   }
 }
 
-// Retrieve credentials from Vite environment variables with project public fallbacks
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://gcgmytgvwxamxidswfst.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZ215dGd2d3hhbXhpZHN3ZnN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyNzQ2NDQsImV4cCI6MjA5ODg1MDY0NH0.hs817kUdDpd_oX4u2rJexFNBKIoRz8YA3ULxKwj4Llk';
+// Helper to clean non-ISO-8859-1 / non-ASCII characters from header strings (BOM, CRLF, smart quotes, etc.)
+const cleanHeaderStr = (val?: string): string => {
+  if (!val) return '';
+  return val.replace(/[^\x20-\x7E]/g, '').trim();
+};
+
+const HARDCODED_URL = 'https://gcgmytgvwxamxidswfst.supabase.co';
+const HARDCODED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZ215dGd2d3hhbXhpZHN3ZnN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyNzQ2NDQsImV4cCI6MjA5ODg1MDY0NH0.hs817kUdDpd_oX4u2rJexFNBKIoRz8YA3ULxKwj4Llk';
+
+const envUrl = cleanHeaderStr(import.meta.env.VITE_SUPABASE_URL);
+const envKey = cleanHeaderStr(import.meta.env.VITE_SUPABASE_ANON_KEY) || cleanHeaderStr(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+
+export const SUPABASE_URL = (envUrl && envUrl.startsWith('http')) ? envUrl : HARDCODED_URL;
+export const SUPABASE_ANON_KEY = (envKey && envKey.length > 20) ? envKey : HARDCODED_KEY;
 
 export const isRealSupabaseConfigured = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 
