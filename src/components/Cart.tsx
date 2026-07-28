@@ -222,7 +222,7 @@ export default function Cart({
       // 3. Format dynamic WhatsApp message
       const selectedMethodLabel = PAYMENT_METHODS.find(m => m.id === paymentMethod)?.label || paymentMethod;
 
-      let message = `*¡Hola MarTemu!*\n`;
+      let message = `*¡Hola MarFami!*\n`;
       message += `Quiero realizar un pedido con los siguientes detalles:\n\n`;
       message += `*Cliente:* ${sanitizedName}\n`;
       message += `*WhatsApp:* ${sanitizedPhone}\n`;
@@ -238,7 +238,7 @@ export default function Cart({
 
       message += `\n*Total del Pedido:* ${formatCurrency(totalAmount)}\n\n`;
       message += `---\n`;
-      message += `_Pedido registrado de forma segura desde el catálogo MarTemu_`;
+      message += `_Pedido registrado de forma segura desde el catálogo MarFami_`;
 
       const encodedMessage = encodeURIComponent(message);
       
@@ -344,7 +344,7 @@ export default function Cart({
                       <ShoppingBag className="h-12 w-12 text-gray-300" />
                       <h3 className="text-sm font-bold text-brand-navy">Tu carrito está esperando por ti</h3>
                       <p className="text-xs text-gray-400 max-w-xs">
-                        Explora las secciones exclusivas de MarTemu y agrega los artículos que más te encantan.
+                        Explora las secciones exclusivas de MarFami y agrega los artículos que más te encantan.
                       </p>
                       <button
                         onClick={onClose}

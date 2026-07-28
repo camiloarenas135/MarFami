@@ -10,3 +10,4 @@ coverage/
 .vercel
 
 graphify-out/
+supabase/.temp/

@@ -196,14 +196,14 @@ const setStorageData = <T>(key: string, value: T): void => {
  * SIMULATED DB ENGINE (Strictly mirrors Supabase tables in LocalStorage)
  */
 export const mockDb = {
-  getProducts: () => getStorageData<Product[]>('martemu_products', DEFAULT_PRODUCTS),
-  setProducts: (products: Product[]) => setStorageData('martemu_products', products),
+  getProducts: () => getStorageData<Product[]>('marfami_products', DEFAULT_PRODUCTS),
+  setProducts: (products: Product[]) => setStorageData('marfami_products', products),
   
-  getVIP: () => getStorageData<VIPMember[]>('martemu_vip', DEFAULT_VIP),
-  setVIP: (vip: VIPMember[]) => setStorageData('martemu_vip', vip),
+  getVIP: () => getStorageData<VIPMember[]>('marfami_vip', DEFAULT_VIP),
+  setVIP: (vip: VIPMember[]) => setStorageData('marfami_vip', vip),
   
-  getOrders: () => getStorageData<Order[]>('martemu_orders', DEFAULT_ORDERS),
-  setOrders: (orders: Order[]) => setStorageData('martemu_orders', orders),
+  getOrders: () => getStorageData<Order[]>('marfami_orders', DEFAULT_ORDERS),
+  setOrders: (orders: Order[]) => setStorageData('marfami_orders', orders),
 };
 
 /**
@@ -318,7 +318,7 @@ export const mockSupabaseClient = {
   },
   auth: {
     getSession: () => {
-      const storedSession = localStorage.getItem('martemu_admin_session');
+      const storedSession = localStorage.getItem('marfami_admin_session');
       if (storedSession) {
         return Promise.resolve({ data: { session: JSON.parse(storedSession) }, error: null });
       }
@@ -327,7 +327,7 @@ export const mockSupabaseClient = {
     signInWithPassword: ({ email, password }: any) => {
       // For mock authentication, allow standard demo emails or is_admin match.
       // Let's create a user structure that looks exactly like Supabase User.
-      if (email.includes('admin') || email === 'camiloarenas135@gmail.com') {
+      if (email.includes('admin') || email === 'marfamishop@gmail.com') {
         const mockSession = {
           user: {
             id: 'admin-usr-uuid',
@@ -336,7 +336,7 @@ export const mockSupabaseClient = {
           },
           access_token: 'mock-jwt-token'
         };
-        localStorage.setItem('martemu_admin_session', JSON.stringify(mockSession));
+        localStorage.setItem('marfami_admin_session', JSON.stringify(mockSession));
         return Promise.resolve({ data: mockSession, error: null });
       }
       return Promise.resolve({ data: null, error: { message: 'Credenciales inválidas. Usa un correo que contenga "admin" o el correo autorizado para probar.' } });
@@ -346,12 +346,12 @@ export const mockSupabaseClient = {
         const mockSession = {
           user: {
             id: 'admin-usr-uuid',
-            email: 'camiloarenas135@gmail.com',
+            email: 'marfamishop@gmail.com',
             user_metadata: { role: 'admin' },
           },
           access_token: 'mock-jwt-token'
         };
-        localStorage.setItem('martemu_admin_session', JSON.stringify(mockSession));
+        localStorage.setItem('marfami_admin_session', JSON.stringify(mockSession));
         // Return success and reload to trigger session pickup
         setTimeout(() => {
           window.location.reload();
@@ -361,12 +361,12 @@ export const mockSupabaseClient = {
       return Promise.resolve({ data: null, error: { message: 'Provider no soportado' } });
     },
     signOut: () => {
-      localStorage.removeItem('martemu_admin_session');
+      localStorage.removeItem('marfami_admin_session');
       return Promise.resolve({ error: null });
     },
     onAuthStateChange: (callback: any) => {
       // In simulated mode, trigger the callback with current session on subscribe
-      const storedSession = localStorage.getItem('martemu_admin_session');
+      const storedSession = localStorage.getItem('marfami_admin_session');
       const session = storedSession ? JSON.parse(storedSession) : null;
       callback('SIGNED_IN', session);
       return { data: { subscription: { unsubscribe: () => {} } } };

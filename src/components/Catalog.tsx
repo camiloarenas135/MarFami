@@ -108,7 +108,7 @@ export default function Catalog({
       .filter((url) => url && url.startsWith('http'));
 
     // 3. Remove existing preloaded images to avoid clogging the DOM
-    const existingPreloads = document.querySelectorAll('link[rel="preload"][as="image"][data-martemu-preload]');
+    const existingPreloads = document.querySelectorAll('link[rel="preload"][as="image"][data-marfami-preload]');
     existingPreloads.forEach((el) => el.remove());
 
     // 4. Inject new link preload elements
@@ -117,13 +117,13 @@ export default function Catalog({
       link.rel = 'preload';
       link.as = 'image';
       link.href = url;
-      link.setAttribute('data-martemu-preload', 'true');
+      link.setAttribute('data-marfami-preload', 'true');
       document.head.appendChild(link);
     });
 
     // Clean up on unmount
     return () => {
-      const remainingPreloads = document.querySelectorAll('link[rel="preload"][as="image"][data-martemu-preload]');
+      const remainingPreloads = document.querySelectorAll('link[rel="preload"][as="image"][data-marfami-preload]');
       remainingPreloads.forEach((el) => el.remove());
     };
   }, [selectedCategory, products]);
@@ -431,7 +431,7 @@ export default function Catalog({
                     {/* Safe SVG Placeholder for Image Load Failure */}
                     <div className="img-fallback-placeholder absolute inset-0 flex flex-col items-center justify-center bg-slate-100 text-slate-400 p-4 text-center" style={{ display: 'none' }}>
                       <ImageIcon className="h-8 w-8 text-slate-300 mb-1" />
-                      <span className="text-[9px] font-semibold">MarTemu Premium</span>
+                      <span className="text-[9px] font-semibold">MarFami Premium</span>
                     </div>
 
                     {/* Quick View Hover Overlay (Desktop only) */}
@@ -561,7 +561,7 @@ export default function Catalog({
                   {/* Embedded SVG Placeholder for failure inside carousel */}
                   <div className="img-fallback-placeholder absolute inset-0 flex flex-col items-center justify-center bg-slate-100 text-slate-400 p-4" style={{ display: 'none' }}>
                     <ImageIcon className="h-12 w-12 text-slate-300 mb-2" />
-                    <span className="text-xs font-semibold">MarTemu Premium Visual</span>
+                    <span className="text-xs font-semibold">MarFami Premium Visual</span>
                   </div>
 
                   {/* Carousel controls */}

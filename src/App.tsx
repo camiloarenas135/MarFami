@@ -78,7 +78,7 @@ export default function App() {
     fetchProducts();
 
     // Load saved cart state from safe local storage
-    const savedCart = readSafeLocalStorage<OrderCartItem[]>('martemu_cart_items', []);
+    const savedCart = readSafeLocalStorage<OrderCartItem[]>('marfami_cart_items', []);
     setCartItems(savedCart);
   }, []);
 
@@ -109,7 +109,7 @@ export default function App() {
   // Sync cart items to safe storage upon edits
   const updateCartState = (newCart: OrderCartItem[]) => {
     setCartItems(newCart);
-    writeSafeLocalStorage<OrderCartItem[]>('martemu_cart_items', newCart, 7); // Expire in 7 days
+    writeSafeLocalStorage<OrderCartItem[]>('marfami_cart_items', newCart, 7); // Expire in 7 days
   };
 
   // 2. CART CRUD OPERATIONS
@@ -282,7 +282,7 @@ export default function App() {
           transition={{ delay: 1, type: 'spring', stiffness: 260, damping: 20 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          href="https://wa.me/573042564311?text=Hola%20MarTemu!%20Me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20productos%20del%20cat%C3%A1logo%20y%20recibir%20asesor%C3%ADa%20personalizada."
+          href="https://wa.me/573042564311?text=Hola%20MarFami!%20Me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20productos%20del%20cat%C3%A1logo%20y%20recibir%20asesor%C3%ADa%20personalizada."
           target="_blank"
           rel="noopener noreferrer"
           className="fixed bottom-20 md:bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-lg shadow-[#25d366]/25 cursor-pointer hover:shadow-xl hover:shadow-[#25d366]/40"

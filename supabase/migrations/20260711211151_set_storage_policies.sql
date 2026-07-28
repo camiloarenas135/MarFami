@@ -17,7 +17,7 @@ DROP POLICY IF EXISTS "Allow admin write access" ON products;
 CREATE POLICY "Allow admin write access" ON products
     FOR ALL
     TO authenticated
-    USING (auth.jwt() ->> 'email' IN ('camiloarenas135@gmail.com', 'martemushop@gmail.com'));
+    USING (auth.jwt() ->> 'email' IN ('camiloarenas135@gmail.com', 'marfamishop@gmail.com'));
 
 -- 2. Policies for 'orders' table
 DROP POLICY IF EXISTS "Allow public insert" ON orders;
@@ -29,7 +29,7 @@ DROP POLICY IF EXISTS "Allow admin read/write" ON orders;
 CREATE POLICY "Allow admin read/write" ON orders
     FOR ALL
     TO authenticated
-    USING (auth.jwt() ->> 'email' IN ('camiloarenas135@gmail.com', 'martemushop@gmail.com'));
+    USING (auth.jwt() ->> 'email' IN ('camiloarenas135@gmail.com', 'marfamishop@gmail.com'));
 
 -- 3. Policies for 'vip_members' table
 DROP POLICY IF EXISTS "Allow public insert" ON vip_members;
@@ -41,7 +41,7 @@ DROP POLICY IF EXISTS "Allow admin read/write" ON vip_members;
 CREATE POLICY "Allow admin read/write" ON vip_members
     FOR ALL
     TO authenticated
-    USING (auth.jwt() ->> 'email' IN ('camiloarenas135@gmail.com', 'martemushop@gmail.com'));
+    USING (auth.jwt() ->> 'email' IN ('camiloarenas135@gmail.com', 'marfamishop@gmail.com'));
 
 
 -- ========================================================
@@ -67,5 +67,5 @@ CREATE POLICY "Admin Write Access" ON storage.objects
     TO authenticated
     USING (
         bucket_id = 'product-images' 
-        AND auth.jwt() ->> 'email' IN ('camiloarenas135@gmail.com', 'martemushop@gmail.com')
+        AND auth.jwt() ->> 'email' IN ('camiloarenas135@gmail.com', 'marfamishop@gmail.com')
     );

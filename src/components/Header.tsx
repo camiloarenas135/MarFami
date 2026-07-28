@@ -41,12 +41,12 @@ export default function Header({
           >
             <img
               src="/infinity.png"
-              alt="MarTemu"
+              alt="MarFami"
               className="h-7 w-auto object-contain aspect-256/150"
               draggable={false}
             />
             <span className="text-2xl font-black tracking-tight text-brand-navy font-heading">
-              Mar<span className="text-brand-blue">Temu</span>
+              Mar<span className="text-brand-blue">Fami</span>
             </span>
             <motion.span 
               initial={{ opacity: 0, x: -5 }}

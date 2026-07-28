@@ -43,7 +43,7 @@ export default function AdminPanel({ products, onRefreshProducts }: AdminPanelPr
 
   // Check auth session on load & setup auth state listener
   useEffect(() => {
-    const allowedEmails = ['camiloarenas135@gmail.com', 'martemushop@gmail.com'];
+    const allowedEmails = ['camiloarenas135@gmail.com', 'marfamishop@gmail.com'];
     
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -150,7 +150,7 @@ export default function AdminPanel({ products, onRefreshProducts }: AdminPanelPr
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-navy text-white">
               <Shield className="h-6 w-6 text-brand-blue" />
             </div>
-            <h2 className="text-2xl font-black text-brand-navy tracking-tight font-heading">Panel de Control MarTemu</h2>
+            <h2 className="text-2xl font-black text-brand-navy tracking-tight font-heading">Panel de Control MarFami</h2>
             <p className="text-xs text-gray-400">
               Acceso exclusivo para administradores autorizados.
             </p>

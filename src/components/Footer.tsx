@@ -17,10 +17,10 @@ export default function Footer({ onNavigateShop }: FooterProps) {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           
-          {/* Acerca de MarTemu */}
+          {/* Acerca de MarFami */}
           <div className="space-y-4">
             <h4 className="text-sm font-bold uppercase tracking-widest text-brand-blue font-heading">
-              Acerca de MarTemu
+              Acerca de MarFami
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
@@ -88,7 +88,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
             <div className="flex items-center gap-5">
               {/* Instagram */}
               <a
-                href="https://www.instagram.com/martemushop?igsh=YjR5cHh3MGZ5dGQw"
+                href="https://www.instagram.com/marfamishop?igsh=YjR5cHh3MGZ5dGQw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-[#e1306c] transition-all duration-200 hover:scale-110 active:scale-95"
@@ -98,7 +98,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
               </a>
               {/* TikTok */}
               <a
-                href="https://www.tiktok.com/@martemu0?_r=1&_t=ZS-97jXK9KdBlV"
+                href="https://www.tiktok.com/@marfamishop?_r=1&_t=ZS-97jXK9KdBlV"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-all duration-200 hover:scale-110 active:scale-95"
@@ -144,7 +144,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
           <p className="text-center text-xs text-gray-500">
-            © {new Date().getFullYear()} MarTemu. Todos los derechos reservados.
+            © {new Date().getFullYear()} MarFami. Todos los derechos reservados.
           </p>
         </div>
       </div>
