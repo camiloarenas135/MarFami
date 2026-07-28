@@ -205,6 +205,16 @@ export const mockDb = {
   
   getOrders: () => getStorageData<Order[]>('marfami_orders', DEFAULT_ORDERS),
   setOrders: (orders: Order[]) => setStorageData('marfami_orders', orders),
+
+  getCategories: () => getStorageData<{ id: string; name: string }[]>('marfami_categories', [
+    { id: 'cat-1', name: 'Tecnología' },
+    { id: 'cat-2', name: 'Hogar y Cocina' },
+    { id: 'cat-3', name: 'Ropa' },
+    { id: 'cat-4', name: 'Belleza' },
+    { id: 'cat-5', name: 'Peluches' },
+    { id: 'cat-6', name: 'Novedades' }
+  ]),
+  setCategories: (cats: { id: string; name: string }[]) => setStorageData('marfami_categories', cats),
 };
 
 /**
@@ -221,6 +231,7 @@ export const mockSupabaseClient = {
             if (table === 'products') data = mockDb.getProducts();
             else if (table === 'orders') data = mockDb.getOrders();
             else if (table === 'vip_members') data = mockDb.getVIP();
+            else if (table === 'categories') data = mockDb.getCategories();
             
             // Return sorted by created_at desc or ID
             data = [...data].reverse();
@@ -243,6 +254,9 @@ export const mockSupabaseClient = {
             } else if (table === 'vip_members') {
               const current = mockDb.getVIP();
               mockDb.setVIP([...current, newRecord]);
+            } else if (table === 'categories') {
+              const current = mockDb.getCategories();
+              mockDb.setCategories([...current, newRecord]);
             }
             callback({ data: newRecord, error: null });
             return Promise.resolve({ data: newRecord, error: null });

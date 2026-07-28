@@ -7,6 +7,7 @@ import React, { useState, useEffect, useTransition } from 'react';
 import { Search, ChevronRight, ChevronLeft, ShoppingCart, SlidersHorizontal, AlertTriangle, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, ProductVariant } from '../types';
+import { supabase } from '../lib/supabase';
 import { sanitizeString, DEFAULT_DESCRIPTIONS } from '../utils/sanitize';
 import { parseCOP, calculateDiscountPercent, getVariantPromoPrice } from '../utils/promoHelpers';
 
@@ -18,7 +19,7 @@ interface CatalogProps {
   onSearchChange: (query: string) => void;
 }
 
-const CATEGORIES = ['Todos', 'Tecnología', 'Hogar y Cocina', 'Ropa', 'Belleza', 'Peluches', 'Novedades'];
+const DEFAULT_CATEGORIES = ['Todos', 'Tecnología', 'Hogar y Cocina', 'Ropa', 'Belleza', 'Peluches', 'Novedades'];
 
 export default function Catalog({
   products,
@@ -27,6 +28,28 @@ export default function Catalog({
   searchQuery,
   onSearchChange,
 }: CatalogProps) {
+  const [dbCategories, setDbCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const { data } = await supabase.from('categories').select('name').order('name');
+        if (data && data.length > 0) {
+          setDbCategories(data.map((c: any) => c.name));
+        }
+      } catch (e) {
+        console.error('Error fetching categories in Catalog:', e);
+      }
+    };
+    loadCategories();
+  }, []);
+
+  const categories = Array.from(new Set([
+    'Todos',
+    ...DEFAULT_CATEGORIES.filter(c => c !== 'Todos'),
+    ...dbCategories,
+    ...products.map(p => p.category)
+  ])).filter(Boolean);
   const [selectedCategory, setSelectedCategory] = useState(() => {
     return sessionStorage.getItem('catalog_selected_category') || 'Todos';
   });
@@ -215,7 +238,7 @@ export default function Catalog({
           
           <div className="w-full relative z-10" id="category-capsule-wrapper">
             <div className="flex overflow-x-auto flex-nowrap sm:flex-wrap items-center gap-1.5 bg-white/70 backdrop-blur-md border border-white/50 p-1 rounded-full shadow-xs scrollbar-none w-full">
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => handleCategoryChange(cat)}

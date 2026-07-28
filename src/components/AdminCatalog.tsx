@@ -18,7 +18,7 @@ interface AdminCatalogProps {
   onClearForceEdit?: () => void;
 }
 
-const CATEGORIES = ['Tecnología', 'Hogar y Cocina', 'Ropa', 'Belleza', 'Peluches', 'Novedades'];
+const DEFAULT_CATEGORIES = ['Tecnología', 'Hogar y Cocina', 'Ropa', 'Belleza', 'Peluches', 'Novedades'];
 
 export default function AdminCatalog({ 
   products, 
@@ -29,6 +29,55 @@ export default function AdminCatalog({
   const [isEditing, setIsEditing] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   
+  // Dynamic categories state
+  const [categoriesList, setCategoriesList] = useState<string[]>(DEFAULT_CATEGORIES);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryInput, setNewCategoryInput] = useState('');
+  const [isSavingCategory, setIsSavingCategory] = useState(false);
+
+  // Load categories from Supabase
+  const fetchCategories = async () => {
+    try {
+      const { data } = await supabase.from('categories').select('name').order('name');
+      if (data && data.length > 0) {
+        const fetched = data.map((c: any) => c.name);
+        setCategoriesList(prev => Array.from(new Set([...DEFAULT_CATEGORIES, ...fetched, ...prev])));
+      }
+    } catch (err) {
+      console.error('Error loading categories:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryInput.trim()) return;
+
+    const sanitized = sanitizeString(capitalizeTitle(newCategoryInput.trim()), 50);
+    if (!sanitized) return;
+
+    setIsSavingCategory(true);
+    try {
+      const { error } = await supabase.from('categories').insert({ name: sanitized });
+      if (error && error.code !== '23505') {
+        throw error;
+      }
+
+      setCategoriesList(prev => Array.from(new Set([...prev, sanitized])));
+      setCategory(sanitized);
+      setNewCategoryInput('');
+      setIsAddingCategory(false);
+    } catch (err: any) {
+      console.error('Error saving category:', err);
+      setUploadError(err.message || 'Error al guardar la nueva categoría.');
+    } finally {
+      setIsSavingCategory(false);
+    }
+  };
+
   // Form values
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -629,7 +678,18 @@ export default function AdminCatalog({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label htmlFor="prod-category" className="text-[10px] font-bold text-gray-500 uppercase">Categoría</label>
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="prod-category" className="text-[10px] font-bold text-gray-500 uppercase">Categoría</label>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingCategory(true)}
+                        className="text-[10px] font-bold text-brand-blue hover:text-brand-purple flex items-center gap-0.5 cursor-pointer"
+                        title="Crear nueva categoría en la base de datos"
+                      >
+                        <Plus className="h-3 w-3" />
+                        <span>+ Nueva</span>
+                      </button>
+                    </div>
                     <select
                       id="prod-category"
                       value={category}
@@ -642,7 +702,7 @@ export default function AdminCatalog({
                       }}
                       className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs text-gray-800 focus:border-brand-purple focus:outline-hidden"
                     >
-                      {CATEGORIES.map((cat) => (
+                      {categoriesList.map((cat) => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
@@ -875,7 +935,7 @@ export default function AdminCatalog({
               className="h-10 rounded-xl border border-gray-200 bg-white px-3 text-xs text-gray-800 focus:border-brand-purple focus:outline-hidden cursor-pointer"
             >
               <option value="Todos">Todos</option>
-              {CATEGORIES.map(cat => (
+              {categoriesList.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
@@ -1068,6 +1128,66 @@ export default function AdminCatalog({
           onCancel={handleCropperCancel}
         />
       )}
+
+      {/* CREATE NEW CATEGORY MODAL */}
+      <AnimatePresence>
+        {isAddingCategory && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 w-full max-w-sm border border-gray-150 shadow-xl space-y-4"
+            >
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h4 className="font-bold text-brand-navy text-sm flex items-center gap-2">
+                  <Plus className="h-4 w-4 text-brand-blue" />
+                  <span>Crear Nueva Categoría</span>
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCategory(false)}
+                  className="text-gray-400 hover:text-gray-600 rounded-full p-1 transition"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateCategory} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Nombre de la Categoría</label>
+                  <input
+                    type="text"
+                    required
+                    autoFocus
+                    placeholder="Ej. Mascotas, Juguetería..."
+                    value={newCategoryInput}
+                    onChange={(e) => setNewCategoryInput(e.target.value)}
+                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-800 focus:border-brand-purple focus:outline-hidden"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingCategory(false)}
+                    className="rounded-lg bg-gray-100 px-3.5 py-2 text-xs font-bold text-gray-600 hover:bg-gray-200 transition cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingCategory}
+                    className="rounded-lg bg-brand-blue px-4 py-2 text-xs font-bold text-white hover:bg-brand-purple disabled:opacity-50 transition cursor-pointer"
+                  >
+                    {isSavingCategory ? 'Guardando...' : 'Crear y Seleccionar'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

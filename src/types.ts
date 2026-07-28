@@ -3,6 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export interface Category {
+  id: string;
+  name: string;
+  created_at?: string;
+}
+
 export interface ProductVariant {
   name: string;
   price: string;
