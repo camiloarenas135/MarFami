@@ -11,3 +11,5 @@ coverage/
 
 graphify-out/
 supabase/.temp/
+
+.vercel

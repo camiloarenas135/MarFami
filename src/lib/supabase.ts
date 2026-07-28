@@ -18,16 +18,14 @@ declare global {
   }
 }
 
-// Retrieve credentials from Vite environment variables
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
+// Retrieve credentials from Vite environment variables with project public fallbacks
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://gcgmytgvwxamxidswfst.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZ215dGd2d3hhbXhpZHN3ZnN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyNzQ2NDQsImV4cCI6MjA5ODg1MDY0NH0.hs817kUdDpd_oX4u2rJexFNBKIoRz8YA3ULxKwj4Llk';
 
 export const isRealSupabaseConfigured = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 
-// Real Supabase Client (only instantiated if credentials exist)
-const realSupabase = isRealSupabaseConfigured 
-  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
-  : null;
+// Real Supabase Client
+const realSupabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /**
  * INITIAL MOCK DATA

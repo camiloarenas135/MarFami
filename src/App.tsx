@@ -11,7 +11,7 @@ import { motion } from 'motion/react';
 import Catalog from './components/Catalog';
 import Cart from './components/Cart';
 const AdminPanel = lazy(() => import('./components/AdminPanel'));
-import { supabase } from './lib/supabase';
+import { supabase, mockDb } from './lib/supabase';
 import { getVariantPromoPrice } from './utils/promoHelpers';
 import { Product, OrderCartItem, ProductVariant } from './types';
 import { writeSafeLocalStorage, readSafeLocalStorage } from './utils/sanitize';
@@ -56,19 +56,24 @@ export default function App() {
   // Search query state (elevated to App level to share with Header)
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. LOAD PRODUCTS ON MOUNT
+  // 1. LOAD PRODUCTS ON MOUNT (With automatic fallback)
   const fetchProducts = async () => {
     setIsLoadingProducts(true);
     try {
       const { data, error } = await supabase.from('products').select('*');
       if (error) {
-        throw error;
+        console.warn('Supabase query returned error, using fallback catalog:', error.message || error);
+        setProducts(mockDb.getProducts());
+        return;
       }
-      if (data) {
+      if (data && data.length > 0) {
         setProducts(data);
+      } else {
+        setProducts(mockDb.getProducts());
       }
     } catch (err) {
-      console.error('Error fetching catalog products:', err);
+      console.error('Error fetching catalog products, using fallback:', err);
+      setProducts(mockDb.getProducts());
     } finally {
       setIsLoadingProducts(false);
     }
