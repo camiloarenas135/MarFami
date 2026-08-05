@@ -6,6 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, LayoutDashboard, ClipboardList, Package, LogOut, RefreshCw, Users, Percent } from 'lucide-react';
 import { supabase, isRealSupabaseConfigured } from '../lib/supabase';
+import { sanitizeEmail } from '../utils/sanitize';
+import { checkRateLimit, recordAttempt } from '../utils/rateLimiter';
 import { Product, Order, VIPMember } from '../types';
 import AdminOrders from './AdminOrders';
 import AdminCatalog from './AdminCatalog';
@@ -115,14 +117,26 @@ export default function AdminPanel({ products, onRefreshProducts }: AdminPanelPr
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail.trim() || !loginPassword) return;
+    const cleanedEmail = sanitizeEmail(loginEmail);
+    if (!cleanedEmail || !loginPassword) {
+      setErrorMsg('Por favor ingresa un correo electrónico válido.');
+      return;
+    }
+
+    // Rate limit check: max 5 login attempts per 15 minutes
+    const limitCheck = checkRateLimit('admin_login', 5, 15 * 60 * 1000);
+    if (limitCheck.limited) {
+      const minutesLeft = Math.ceil((limitCheck.resetTime - Date.now()) / (60 * 1000));
+      setErrorMsg(`Demasiados intentos fallidos. Por favor espera ${minutesLeft} minuto(s) antes de reintentar.`);
+      return;
+    }
 
     setIsLoading(true);
     setErrorMsg('');
     try {
       const allowedEmails = ['camiloarenas135@gmail.com', 'marfamishop@gmail.com'];
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: loginEmail.trim(),
+        email: cleanedEmail,
         password: loginPassword
       });
 
@@ -139,6 +153,7 @@ export default function AdminPanel({ products, onRefreshProducts }: AdminPanelPr
       }
     } catch (err: any) {
       console.error('Email login error:', err);
+      recordAttempt('admin_login', 15 * 60 * 1000);
       setErrorMsg(err.message || 'Credenciales inválidas. Verifica tu correo y contraseña.');
     } finally {
       setIsLoading(false);

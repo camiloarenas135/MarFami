@@ -4,16 +4,43 @@
  */
 
 /**
- * Sanitizes a string by removing HTML tags, angle brackets, and capping length to prevent XSS.
+ * Sanitizes a string by removing HTML tags, angle brackets, script protocols,
+ * and dangerous event handlers to prevent XSS and prompt injection attacks.
  */
 export function sanitizeString(str: string, maxLength = 500): string {
   if (!str) return '';
   // Remove HTML tags
   let sanitized = str.replace(/<[^>]*>/g, '');
-  // Remove individual angle brackets and replace with safe characters or empty
+  // Remove individual angle brackets
   sanitized = sanitized.replace(/[<>]/g, '');
+  // Strip dangerous inline protocols (javascript:, data:text/html, etc.)
+  sanitized = sanitized.replace(/javascript:/gi, '').replace(/data:text\/html/gi, '');
+  // Remove dangerous inline event attributes like onerror=, onload=, onclick=
+  sanitized = sanitized.replace(/\bon\w+\s*=/gi, '');
   // Trim and limit length
   return sanitized.substring(0, maxLength).trim();
+}
+
+/**
+ * Validates and cleans an email string.
+ */
+export function sanitizeEmail(email: string): string {
+  if (!email) return '';
+  const cleaned = email.trim().toLowerCase().substring(0, 100);
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(cleaned) ? cleaned : '';
+}
+
+/**
+ * Validates and sanitizes a URL string to ensure it uses http, https, or relative protocol.
+ */
+export function sanitizeUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('data:image/') || trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/')) {
+    return trimmed;
+  }
+  return '';
 }
 
 /**

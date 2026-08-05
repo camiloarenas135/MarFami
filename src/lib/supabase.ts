@@ -24,19 +24,16 @@ const cleanHeaderStr = (val?: string): string => {
   return val.replace(/[^\x20-\x7E]/g, '').trim();
 };
 
-const HARDCODED_URL = 'https://gcgmytgvwxamxidswfst.supabase.co';
-const HARDCODED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZ215dGd2d3hhbXhpZHN3ZnN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyNzQ2NDQsImV4cCI6MjA5ODg1MDY0NH0.hs817kUdDpd_oX4u2rJexFNBKIoRz8YA3ULxKwj4Llk';
-
 const envUrl = cleanHeaderStr(import.meta.env.VITE_SUPABASE_URL);
 const envKey = cleanHeaderStr(import.meta.env.VITE_SUPABASE_ANON_KEY) || cleanHeaderStr(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
 
-export const SUPABASE_URL = (envUrl && envUrl.startsWith('http')) ? envUrl : HARDCODED_URL;
-export const SUPABASE_ANON_KEY = (envKey && envKey.length > 20) ? envKey : HARDCODED_KEY;
+export const SUPABASE_URL = (envUrl && envUrl.startsWith('http')) ? envUrl : '';
+export const SUPABASE_ANON_KEY = (envKey && envKey.length > 20) ? envKey : '';
 
 export const isRealSupabaseConfigured = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 
-// Real Supabase Client
-const realSupabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Real Supabase Client (created only when valid environment credentials are provided)
+const realSupabase = isRealSupabaseConfigured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 /**
  * INITIAL MOCK DATA

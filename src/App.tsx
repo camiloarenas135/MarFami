@@ -40,8 +40,8 @@ function useRoute() {
 export default function App() {
   const { pathname, navigate } = useRoute();
 
-  // true when URL is /admin (or any /admin/* sub-path)
-  const isAdminRoute = pathname.startsWith('/admin');
+  // true when URL is /admin (or any /admin/* sub-path) or when domain is admin.* subdomain
+  const isAdminRoute = pathname.startsWith('/admin') || window.location.hostname.startsWith('admin.');
 
   // Modal controllers
   const [isCartOpen, setIsCartOpen] = useState(() => sessionStorage.getItem('is_cart_open') === 'true');
