@@ -210,7 +210,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
               className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden z-10 my-8 max-h-[85vh] flex flex-col border border-gray-100"
             >
               {/* Header */}
-              <div className="px-6 py-5 bg-gradient-to-r from-brand-navy via-brand-navy to-brand-blue text-white flex items-center justify-between shrink-0">
+              <div className="px-6 py-5 bg-linear-to-r from-brand-navy via-brand-navy to-brand-blue text-white flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/10 rounded-xl backdrop-blur-md">
                     {activeModal === 'garantia' && <ShieldCheck className="h-6 w-6 text-brand-blue" />}
