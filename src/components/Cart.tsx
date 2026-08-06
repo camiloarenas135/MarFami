@@ -537,11 +537,15 @@ export default function Cart({
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="w-full flex h-11 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-purple to-brand-blue text-xs font-bold text-white transition-all hover:shadow-lg disabled:opacity-50"
+                          className="w-full flex h-11 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-purple to-brand-blue text-xs font-bold text-white transition-all hover:shadow-lg disabled:opacity-50 cursor-pointer"
                         >
                           <Send className="h-4 w-4" />
                           <span>{isSubmitting ? 'Procesando...' : 'Confirmar y Enviar a WhatsApp'}</span>
                         </button>
+                        
+                        <p className="text-[10px] text-gray-400 text-center leading-tight pt-1">
+                          Al realizar tu pedido, aceptas nuestros <strong className="text-gray-600">Términos y Condiciones</strong> y la <strong className="text-gray-600">Política de Tratamiento de Datos (Ley 1581 de 2012)</strong>.
+                        </p>
                       </form>
                     </div>
                   )}

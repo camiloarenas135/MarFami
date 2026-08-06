@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { Instagram, Facebook, ShieldCheck, Truck, FileText, X, CheckCircle2, AlertTriangle, MapPin, RefreshCw, Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Instagram, Facebook, ShieldCheck, Truck, FileText, X, CheckCircle2, AlertTriangle, MapPin, RefreshCw, Clock, Phone, FileCheck, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface FooterProps {
@@ -15,6 +15,22 @@ type PolicyType = 'garantia' | 'envios' | 'devoluciones' | 'terminos' | 'privaci
 
 export default function Footer({ onNavigateShop }: FooterProps) {
   const [activeModal, setActiveModal] = useState<PolicyType>(null);
+  const [showConsentBanner, setShowConsentBanner] = useState<boolean>(false);
+
+  useEffect(() => {
+    // Check if user has already accepted data treatment & terms
+    const accepted = localStorage.getItem('marfami_terms_accepted');
+    if (!accepted) {
+      // Delay slightly for smooth entrance after load
+      const timer = setTimeout(() => setShowConsentBanner(true), 1200);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleAcceptTerms = () => {
+    localStorage.setItem('marfami_terms_accepted', 'true');
+    setShowConsentBanner(false);
+  };
 
   const closeModal = () => setActiveModal(null);
 
@@ -67,6 +83,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                     rel="noopener noreferrer"
                     className="hover:text-white transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
                   >
+                    <Phone className="h-4 w-4 text-emerald-400 shrink-0" />
                     <span>Contacto directo WhatsApp</span>
                   </a>
                 </li>
@@ -76,7 +93,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                     className="hover:text-white transition-colors duration-200 cursor-pointer flex items-center gap-1.5 text-left text-gray-300"
                   >
                     <RefreshCw className="h-4 w-4 text-brand-blue shrink-0" />
-                    <span>Política de Devolución</span>
+                    <span>Política de Devolución y Garantías</span>
                   </button>
                 </li>
                 <li>
@@ -112,7 +129,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                     className="hover:text-white transition-colors duration-200 cursor-pointer flex items-center gap-1.5 text-left text-gray-300"
                   >
                     <ShieldCheck className="h-4 w-4 text-brand-blue shrink-0" />
-                    <span>Política de Privacidad</span>
+                    <span>Tratamiento de Datos (Habeas Data)</span>
                   </button>
                 </li>
               </ul>
@@ -180,13 +197,71 @@ export default function Footer({ onNavigateShop }: FooterProps) {
 
         {/* Copyright bar */}
         <div className="border-t border-white/10 bg-black/20">
-          <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-            <p className="text-center text-xs text-gray-400">
-              © {new Date().getFullYear()} <strong className="text-white font-semibold">MarFami</strong>. Todos los derechos reservados.
+          <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <p className="text-xs text-gray-400">
+              © {new Date().getFullYear()} <strong className="text-white font-semibold">MarFami</strong>. Jamundí, Valle del Cauca. Todos los derechos reservados.
+            </p>
+            <p className="text-xs text-gray-400 flex items-center gap-1.5 justify-center">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 inline" />
+              <span>Tratamiento de Datos protegido bajo Ley 1581 de 2012</span>
             </p>
           </div>
         </div>
       </footer>
+
+      {/* FLOATING CONSENT / TERMS ACCEPTANCE BANNER */}
+      <AnimatePresence>
+        {showConsentBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+            className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-40 bg-brand-navy/95 backdrop-blur-md border border-white/15 text-white p-5 rounded-2xl shadow-2xl"
+          >
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 bg-brand-blue/20 text-brand-blue rounded-xl shrink-0 mt-0.5 border border-brand-blue/30">
+                <FileCheck className="h-5 w-5" />
+              </div>
+              <div className="space-y-2 text-xs text-gray-200">
+                <h5 className="font-bold text-white text-sm font-heading flex items-center justify-between">
+                  <span>Términos y Tratamiento de Datos</span>
+                  <button 
+                    onClick={handleAcceptTerms} 
+                    className="text-gray-400 hover:text-white transition cursor-pointer p-0.5"
+                    title="Cerrar aviso"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </h5>
+                <p className="leading-relaxed">
+                  En <strong>MarFami</strong> tratamos tus datos personales conforme a la <strong>Ley 1581 de 2012 (Habeas Data)</strong> para procesar tus pedidos y envíos. Al navegar en nuestro sitio, aceptas nuestros términos legales.
+                </p>
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <button
+                    onClick={handleAcceptTerms}
+                    className="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl transition cursor-pointer shadow-md text-xs"
+                  >
+                    Aceptar y Continuar
+                  </button>
+                  <button
+                    onClick={() => setActiveModal('terminos')}
+                    className="px-3 py-2 bg-white/10 hover:bg-white/20 text-gray-200 hover:text-white rounded-xl transition text-xs cursor-pointer border border-white/10"
+                  >
+                    Ver Términos
+                  </button>
+                  <button
+                    onClick={() => setActiveModal('privacidad')}
+                    className="px-3 py-2 text-gray-300 hover:text-white underline text-xs cursor-pointer"
+                  >
+                    Política de Datos
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* POLICY MODALS */}
       <AnimatePresence>
@@ -222,12 +297,12 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                   <div>
                     <h3 className="text-lg font-bold font-heading">
                       {activeModal === 'garantia' && 'Políticas de Garantía de Calidad'}
-                      {activeModal === 'envios' && 'Servicio a Domicilio y Envíos'}
-                      {activeModal === 'devoluciones' && 'Política de Devolución'}
-                      {activeModal === 'terminos' && 'Términos y Condiciones'}
-                      {activeModal === 'privacidad' && 'Política de Privacidad'}
+                      {activeModal === 'envios' && 'Envíos y Servicio a Domicilio'}
+                      {activeModal === 'devoluciones' && 'Política de Devoluciones y Garantías'}
+                      {activeModal === 'terminos' && 'Términos y Condiciones de Uso'}
+                      {activeModal === 'privacidad' && 'Tratamiento de Datos Personales'}
                     </h3>
-                    <p className="text-xs text-gray-300">MarFami • Información Oficial</p>
+                    <p className="text-xs text-gray-300">MarFami • Jamundí, Valle del Cauca</p>
                   </div>
                 </div>
 
@@ -242,7 +317,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
               {/* Scrollable Content Body */}
               <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-gray-700 text-sm leading-relaxed">
                 
-                {/* 1. POLÍTICA DE GARANTÍA */}
+                {/* 1. POLÍTICA DE GARANTÍA DE CALIDAD */}
                 {activeModal === 'garantia' && (
                   <>
                     <div className="bg-blue-50/80 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
@@ -259,10 +334,10 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                       <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
                         <div className="flex items-center gap-2 text-brand-navy font-bold text-xs uppercase mb-2">
                           <Clock className="h-4 w-4 text-brand-purple" />
-                          <span>Duración de Garantía</span>
+                          <span>Duración General</span>
                         </div>
                         <p className="text-xs text-gray-600">
-                          <strong>1 mes</strong> a partir de la fecha de compra, presentando tu comprobante de pago o factura.
+                          <strong>1 mes (30 días)</strong> a partir de la fecha de compra, presentando comprobante de pago.
                         </p>
                       </div>
 
@@ -277,6 +352,16 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                       </div>
                     </div>
 
+                    <div className="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-4 flex items-start gap-3">
+                      <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-bold text-emerald-900 text-xs uppercase tracking-wider">Servicio a Domicilio</h4>
+                        <p className="text-xs text-emerald-800 mt-1">
+                          Ofrecemos servicio a domicilio en la ciudad de <strong>Cali y Jamundí</strong>, con modalidad de <strong>Pago Contra Entrega</strong>.
+                        </p>
+                      </div>
+                    </div>
+
                     <div className="space-y-3">
                       <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4 text-amber-500" />
@@ -285,7 +370,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                       <ul className="space-y-2 text-xs text-gray-600 bg-amber-50/50 border border-amber-100 rounded-2xl p-4">
                         <li className="flex items-start gap-2">
                           <span className="text-amber-500 font-bold">•</span>
-                          <span>Daños provocados por mal uso, golpes, caídas o exposición a líquidos.</span>
+                          <span>Daños por mal uso, golpes, caídas o exposición a líquidos.</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-amber-500 font-bold">•</span>
@@ -293,7 +378,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-amber-500 font-bold">•</span>
-                          <span>Desgaste natural de piezas de consumo como cables, conectores o baterías recargables.</span>
+                          <span>Desgaste natural de piezas como cables, conectores o baterías recargables.</span>
                         </li>
                       </ul>
                     </div>
@@ -302,118 +387,416 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                       <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Procedimiento de Reclamación</h4>
                       <ol className="list-decimal list-inside space-y-1.5 text-xs text-gray-600 pl-1">
                         <li>Presentar el producto junto con la factura o comprobante de compra.</li>
-                        <li>Evaluación técnica por parte de nuestro equipo para determinar si aplica la garantía.</li>
-                        <li>Aprobación e inicio inmediato del proceso de reparación o reemplazo.</li>
+                        <li>Evaluación técnica por nuestro equipo para determinar si aplica la garantía.</li>
+                        <li>En caso de aprobación: reparación sin costo o reemplazo del producto (según disponibilidad).</li>
                       </ol>
                     </div>
                   </>
                 )}
 
-                {/* 2. ENVÍOS Y SERVICIO A DOMICILIO */}
+                {/* 2. ENVÍOS Y ENTREGAS */}
                 {activeModal === 'envios' && (
                   <>
-                    <div className="bg-emerald-50/80 border border-emerald-100 rounded-2xl p-4 flex items-start gap-3">
-                      <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div className="bg-blue-50/80 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
+                      <Truck className="h-5 w-5 text-brand-blue shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-bold text-emerald-900 text-xs uppercase tracking-wider">Servicio a Domicilio</h4>
-                        <p className="text-xs text-emerald-800 mt-1">
-                          Ofrecemos servicio a domicilio en la ciudad de <strong>Cali</strong> y <strong>Jamundí</strong>, con modalidad de <strong>Pago Contra Entrega</strong> (pagas cuando recibes en la puerta de tu hogar).
+                        <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Envíos y Entregas - MarFami</h4>
+                        <p className="text-xs text-gray-600 mt-1">
+                          En MarFami enviamos tus productos con todo el cuidado desde <strong>Jamundí, Valle del Cauca</strong> para que lleguen de forma rápida y segura hasta la puerta de tu casa.
                         </p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1.5">
-                        <div className="flex items-center gap-2 text-brand-navy font-bold text-xs uppercase">
-                          <Truck className="h-4 w-4 text-brand-blue" />
-                          <span>Entrega Local Ágil</span>
+                    {/* 1. Costos y Promociones */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider flex items-center gap-2">
+                        <span>1. Costo del Envío y Promociones</span>
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+                          <p className="font-bold text-emerald-900 mb-1">¡Envío GRATIS!</p>
+                          <p className="text-emerald-800">
+                            Disfruta de envío sin costo a nivel nacional por compras superiores a <strong>$500.000 COP</strong>.
+                          </p>
                         </div>
-                        <p className="text-xs text-gray-600">
-                          Envíos locales el mismo día o al día hábil siguiente a la confirmación de tu pedido por WhatsApp.
-                        </p>
+                        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                          <p className="font-bold text-brand-navy mb-1">Tarifa Estándar</p>
+                          <p className="text-gray-600">
+                            Para compras inferiores a $500.000 COP, el costo del envío se calculará automáticamente en la pantalla de pago según el destino y peso del pedido.
+                          </p>
+                        </div>
                       </div>
+                    </div>
 
-                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1.5">
-                        <div className="flex items-center gap-2 text-brand-navy font-bold text-xs uppercase">
-                          <CheckCircle2 className="h-4 w-4 text-brand-purple" />
-                          <span>Pago Contra Entrega</span>
-                        </div>
-                        <p className="text-xs text-gray-600">
-                          Aceptamos efectivo, Nequi o transferencia bancaria directa al recibir tu producto.
+                    {/* 2. Pago Contra Entrega */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider flex items-center gap-2">
+                        <span>2. Servicio de Pago Contra Entrega 🚚💰</span>
+                      </h4>
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2 text-xs text-gray-600">
+                        <p>
+                          <strong className="text-brand-navy">Cobertura Exclusiva:</strong> Contamos con opción de Pago Contra Entrega únicamente para las ciudades de <strong>Cali y Jamundí</strong>. Recibes tu pedido en la puerta de tu casa y pagas en efectivo o transferencia al momento de la entrega.
+                        </p>
+                        <p>
+                          <strong className="text-brand-navy">Resto del País:</strong> Para envíos a otras ciudades de Colombia, los pedidos deben estar previamente pagados a través de nuestros medios de pago en la página web.
                         </p>
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2">
-                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Envíos a Otras Ciudades</h4>
-                      <p className="text-xs text-gray-600">
-                        Para el resto del territorio nacional en Colombia, realizamos despachos con transportadoras aliadas previa confirmación y pago de tu pedido.
+                    {/* 3. Tiempos de Entrega */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-brand-purple" />
+                        <span>3. Tiempos de Entrega y Despacho</span>
+                      </h4>
+                      <p className="text-xs text-gray-500 italic">
+                        Los tiempos de entrega cuentan a partir de la confirmación de tu pedido o pago:
                       </p>
+                      <ul className="space-y-2 text-xs text-gray-600 bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                        <li className="flex items-start gap-2">
+                          <span className="text-brand-blue font-bold">•</span>
+                          <span><strong>Cali y Jamundí:</strong> De 1 a 2 días hábiles (o entrega el mismo día para pedidos confirmados en la mañana).</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-brand-blue font-bold">•</span>
+                          <span><strong>Otras ciudades principales:</strong> De 2 a 4 días hábiles.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-brand-blue font-bold">•</span>
+                          <span><strong>Municipios y reexpediciones:</strong> De 3 a 6 días hábiles.</span>
+                        </li>
+                      </ul>
+                      <div className="bg-amber-50/70 border border-amber-100 rounded-2xl p-3.5 text-xs text-amber-900">
+                        <strong>Horario de Despacho:</strong> Los pedidos confirmados antes de la 1:00 p.m. de Lunes a Viernes se entregan a la transportadora el mismo día. Los pedidos del fin de semana o festivos se procesan al siguiente día hábil.
+                      </div>
+                    </div>
+
+                    {/* 4. Seguimiento */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">4. Seguimiento de tu Pedido</h4>
+                      <p className="text-xs text-gray-600">
+                        Apenas tu paquete salga de nuestra sede en Jamundí, te enviaremos un mensaje por WhatsApp con:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-xs text-gray-600 pl-2">
+                        <li>Nombre de la empresa de mensajería.</li>
+                        <li>Número de guía.</li>
+                        <li>Enlace para rastrear el recorrido de tu paquete en tiempo real.</li>
+                      </ul>
+                    </div>
+
+                    {/* 5. Recomendaciones */}
+                    <div className="space-y-3 border-t border-gray-100 pt-4">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">5. Recomendaciones de Entrega</h4>
+                      <ul className="space-y-2 text-xs text-gray-600 bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>Verifica que la dirección registrada esté completa (número de casa, apartamento, torre o barrio).</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>Revisa que el paquete esté bien sellado al recibirlo. Si notas alguna alteración en la caja o sobre, tómale una foto antes de abrirlo y escríbenos de inmediato.</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 text-xs text-emerald-900 space-y-1">
+                      <p className="font-bold">¿Necesitas ayuda con un envío?</p>
+                      <p>Estamos listos para atenderte y resolver cualquier duda:</p>
+                      <p>• <strong>WhatsApp de Atención:</strong> +57 304 256 4311</p>
+                      <p>• <strong>Atención al Cliente:</strong> Lunes a Sábado de 8:00 a.m. a 6:00 p.m.</p>
                     </div>
                   </>
                 )}
 
-                {/* 3. POLÍTICA DE DEVOLUCIÓN */}
+                {/* 3. POLÍTICA DE DEVOLUCIONES Y GARANTÍAS */}
                 {activeModal === 'devoluciones' && (
                   <>
                     <div className="bg-purple-50/80 border border-purple-100 rounded-2xl p-4 flex items-start gap-3">
                       <RefreshCw className="h-5 w-5 text-brand-purple shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Cambios y Devoluciones</h4>
+                        <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Política de Devoluciones y Garantías de MarFami</h4>
                         <p className="text-xs text-gray-600 mt-1">
-                          Si tu producto presenta alguna inconsistencia o falla técnica al momento de recibirlo, puedes solicitar cambio o devolución en un plazo máximo de <strong>5 días hábiles</strong>.
+                          En MarFami nos esforzamos por ofrecerte productos de la mejor calidad. Si por alguna razón necesitas realizar un cambio, devolución o hacer efectiva una garantía, aquí te explicamos el paso a paso de forma clara y transparente.
                         </p>
                       </div>
                     </div>
 
+                    {/* 1. Plazos de Solicitud */}
                     <div className="space-y-3">
-                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Requisitos para Devolución</h4>
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-brand-purple" />
+                        <span>1. Plazos de Solicitud</span>
+                      </h4>
                       <ul className="space-y-2 text-xs text-gray-600 bg-gray-50 rounded-2xl p-4 border border-gray-100">
                         <li className="flex items-start gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                          <span>El producto debe encontrarse en su empaque original, con todos sus accesorios y etiquetas intactas.</span>
+                          <span className="text-brand-purple font-bold">•</span>
+                          <span><strong>Derecho de retracto / Arrepentimiento:</strong> Dispones de <strong>5 días hábiles</strong> tras recibir tu pedido para devolverlo y solicitar el reembolso total de tu dinero.</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                          <span>Presentar el comprobante de compra o factura emitida por MarFami.</span>
+                          <span className="text-brand-purple font-bold">•</span>
+                          <span><strong>Cambios por satisfacción (modelo, color u opción de preferencia):</strong> Tienes hasta <strong>15 días calendario</strong> desde la entrega de tu paquete para solicitar un cambio.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-brand-purple font-bold">•</span>
+                          <div>
+                            <strong>Garantía por defectos de fábrica:</strong>
+                            <ul className="list-disc list-inside mt-1 pl-2 space-y-1 text-gray-600">
+                              <li><strong>Productos de tecnología y artículos de hogar con componentes electrónicos:</strong> 30 días calendario de garantía por fallas de funcionamiento.</li>
+                              <li><strong>Peluches y artículos para el hogar sin componentes electrónicos:</strong> 15 días calendario.</li>
+                            </ul>
+                          </div>
                         </li>
                       </ul>
                     </div>
-                  </>
-                )}
 
-                {/* 4. TÉRMINOS Y CONDICIONES */}
-                {activeModal === 'terminos' && (
-                  <>
-                    <div className="space-y-3 text-xs text-gray-600">
-                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Condiciones Generales de Uso</h4>
-                      <p>
-                        Al navegar y comprar en <strong>MarFami</strong>, aceptas los términos y condiciones estipulados para la comercialización de nuestros productos en catálogo.
+                    {/* 2. Condiciones para Aceptar una Devolución */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">2. Condiciones para Aceptar una Devolución</h4>
+                      <p className="text-xs text-gray-500">
+                        Para hacer efectivo cualquier cambio, devolución o reembolso, el producto debe cumplir con lo siguiente:
                       </p>
-                      <p>
-                        Todos los precios mostrados están expresados en Pesos Colombianos (COP) y están sujetos a disponibilidad de inventario.
+                      <ul className="space-y-2 text-xs text-gray-600 bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>Conservar su estado original, sin señales de uso, desgaste, lavado o manipulación indebida.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>Mantener sus etiquetas, accesorios y empaques originales en buen estado.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>Contar con el comprobante o número de pedido.</span>
+                        </li>
+                      </ul>
+
+                      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 flex items-start gap-2.5">
+                        <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="font-bold text-amber-950">⚠️ Excepción de Seguridad e Higiene:</strong>
+                          <p className="mt-1">
+                            Por motivos de salud y cuidado personal, los productos de belleza <strong>NO tienen cambio ni devolución si sus sellos de seguridad o empaques han sido abiertos</strong>, salvo que presenten un defecto comprobado de fábrica.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. Costos de Envío */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">3. Costos de Envío</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                          <p className="font-bold text-brand-navy mb-1">Por cambio de opinión o arrepentimiento</p>
+                          <p className="text-gray-600">
+                            El cliente asumirá la totalidad de los costos de envío necesarios para devolver el producto y despachar el reemplazo.
+                          </p>
+                        </div>
+                        <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+                          <p className="font-bold text-emerald-900 mb-1">Por producto defectuoso o error en el envío</p>
+                          <p className="text-emerald-800">
+                            <strong>MarFami asumirá el 100%</strong> de los costos de transporte.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 4. Reembolsos de Dinero */}
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">4. Reembolsos de Dinero</h4>
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 text-xs text-gray-600">
+                        Una vez recibido e inspeccionado el producto en nuestras instalaciones, procesaremos el reembolso de tu dinero directamente a tu cuenta bancaria en un plazo de <strong>5 a 8 días hábiles</strong>.
+                      </div>
+                    </div>
+
+                    {/* 5. ¿Cómo Iniciar el Proceso? */}
+                    <div className="space-y-3 border-t border-gray-100 pt-4">
+                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">5. ¿Cómo Iniciar el Proceso?</h4>
+                      <p className="text-xs text-gray-600">
+                        Para gestionar cualquier devolución o garantía, comunícate directamente con nuestro equipo de atención:
                       </p>
-                      <p>
-                        Los pedidos realizados en la plataforma web son confirmados y procesados de manera directa a través de nuestros canales oficiales de WhatsApp para garantizar un servicio personalizado.
-                      </p>
+                      <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 text-xs text-emerald-900 space-y-1.5">
+                        <p className="flex items-center gap-2 font-bold">
+                          <Phone className="h-4 w-4 text-emerald-600" />
+                          <span>WhatsApp de Atención al Cliente: +57 304 256 4311</span>
+                        </p>
+                        <p className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-emerald-600" />
+                          <span>Horarios de Atención: Lunes a Sábado de 8:00 a.m. a 6:00 p.m.</span>
+                        </p>
+                        <p className="pt-1 text-emerald-800 italic">
+                          Al escribirnos, por favor incluye tu número de pedido, fotos o videos del producto (en caso de fallas) y una breve explicación de tu solicitud.
+                        </p>
+                      </div>
                     </div>
                   </>
                 )}
 
-                {/* 5. POLÍTICA DE PRIVACIDAD */}
+                {/* 4. TÉRMINOS Y CONDICIONES DE USO */}
+                {activeModal === 'terminos' && (
+                  <>
+                    <div className="bg-blue-50/80 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
+                      <FileText className="h-5 w-5 text-brand-blue shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Términos y Condiciones de Uso - MarFami</h4>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Bienvenido al sitio web de MarFami. Al acceder, navegar o realizar compras en nuestra plataforma web, aceptas quedar vinculado por los siguientes Términos y Condiciones. Te aconsejamos leerlos detenidamente antes de realizar cualquier transacción.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 text-xs text-gray-600">
+                      {/* 1 */}
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <h5 className="font-bold text-brand-navy uppercase">1. Información General del Negocio</h5>
+                        <ul className="list-disc list-inside space-y-1 pt-1">
+                          <li><strong>Nombre comercial:</strong> MarFami</li>
+                          <li><strong>Ubicación principal:</strong> Jamundí, Valle del Cauca, Colombia</li>
+                          <li><strong>Canal de contacto oficial:</strong> WhatsApp +57 304 256 4311</li>
+                          <li><strong>Categorías de comercialización:</strong> Peluches, productos de belleza y cuidado personal, artículos para el hogar y tecnología.</li>
+                        </ul>
+                      </div>
+
+                      {/* 2 */}
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <h5 className="font-bold text-brand-navy uppercase">2. Uso del Sitio Web y Capacidad Legal</h5>
+                        <p>
+                          Para realizar compras en MarFami, el usuario declara ser mayor de edad (18 años o más) y contar con la capacidad legal para contratar. Si eres menor de edad, debes realizar tus compras bajo la supervisión de un padre o tutor legal.
+                        </p>
+                        <p>
+                          El usuario se compromete a proporcionar información verdadera, precisa y actualizada al momento de realizar un pedido o registro.
+                        </p>
+                      </div>
+
+                      {/* 3 */}
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <h5 className="font-bold text-brand-navy uppercase">3. Precios, Inventario y Promociones</h5>
+                        <p>
+                          <strong>Precios:</strong> Todos los precios publicados en el sitio web están expresados en pesos colombianos ($ COP) e incluyen los impuestos aplicables.
+                        </p>
+                        <p>
+                          <strong>Disponibilidad de Inventario:</strong> Los productos están sujetos a disponibilidad de stock. En caso de que un producto no se encuentre disponible tras realizar la compra, nos pondremos en contacto de inmediato para coordinar el cambio de artículo o la devolución del dinero.
+                        </p>
+                        <p>
+                          <strong>Ajuste de precios:</strong> MarFami se reserva el derecho de modificar los precios, promociones o especificaciones de los productos en cualquier momento sin previo aviso.
+                        </p>
+                      </div>
+
+                      {/* 4 */}
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <h5 className="font-bold text-brand-navy uppercase">4. Métodos de Pago</h5>
+                        <p>Aceptamos pagos a través de los siguientes canales habilitados en nuestra web:</p>
+                        <ul className="list-disc list-inside space-y-1 pl-1">
+                          <li>Pasarelas de pago electrónicas (tarjetas de crédito, débito PSE, transferencias).</li>
+                          <li><strong>Pago Contra Entrega:</strong> Aplica únicamente para las zonas urbanas de las ciudades de Cali y Jamundí en dinero en efectivo o transferencia confirmada al momento de la entrega.</li>
+                        </ul>
+                      </div>
+
+                      {/* 5 */}
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <h5 className="font-bold text-brand-navy uppercase">5. Envíos y Políticas de Devolución</h5>
+                        <p>
+                          Las condiciones de despacho, tiempos de entrega, cobros de flete, así como el trámite de garantías, retractos y devoluciones se rigen estrictamente por nuestras páginas e informaciones independientes de Política de Envíos y Entregas, y Política de Devoluciones y Garantías.
+                        </p>
+                      </div>
+
+                      {/* 6 */}
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <h5 className="font-bold text-brand-navy uppercase">6. Productos y Garantías Específicas</h5>
+                        <ul className="list-disc list-inside space-y-1 pl-1">
+                          <li><strong>Tecnología y Hogar (Electrónicos):</strong> Cuentan con 30 días de garantía por fallas de fabricación. La garantía se invalida por mal uso, golpes, humedad o manipulaciones no autorizadas.</li>
+                          <li><strong>Belleza y Cuidado Personal:</strong> Por normas higiénico-sanitarias, no aceptamos cambios ni devoluciones de productos cuyo empaque o sello de seguridad haya sido abierto, salvo fallas comprobadas de fábrica.</li>
+                          <li><strong>Peluches y Hogar (No Electrónicos):</strong> Cuentan con 15 días de garantía por defectos de costura o materiales.</li>
+                        </ul>
+                      </div>
+
+                      {/* 7 */}
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <h5 className="font-bold text-brand-navy uppercase">7. Propiedad Intelectual</h5>
+                        <p>
+                          Todo el contenido presente en este sitio web, incluyendo imágenes de productos, logotipos, textos, diseños, gráficos y marcas registradas, es propiedad de MarFami o cuenta con la debida autorización de uso. Queda estrictamente prohibida su copia, reproducción o distribución sin autorización previa por escrito.
+                        </p>
+                      </div>
+
+                      {/* 8 */}
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <h5 className="font-bold text-brand-navy uppercase">8. Protección y Tratamiento de Datos Personales</h5>
+                        <p>
+                          En cumplimiento de la Ley 1581 de 2012 de Habeas Data, los datos personales recolectados a través de nuestro sitio web (nombre, dirección, teléfono, cédula y correo) serán utilizados exclusivamente para la gestión de envíos, facturación y atención al cliente. MarFami no venderá ni compartirá tus datos con terceros para fines ajenos a la transacción comercial.
+                        </p>
+                      </div>
+
+                      {/* 9 & 10 */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                          <h5 className="font-bold text-brand-navy uppercase">9. Modificaciones</h5>
+                          <p>
+                            MarFami se reserva el derecho de actualizar o cambiar estos Términos y Condiciones en cualquier momento con efecto inmediato a partir de su publicación.
+                          </p>
+                        </div>
+                        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                          <h5 className="font-bold text-brand-navy uppercase">10. Ley Aplicable</h5>
+                          <p>
+                            Estos Términos y Condiciones se rigen e interpretan bajo las leyes de la República de Colombia.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 text-xs text-emerald-900 flex items-center justify-between gap-2">
+                        <div>
+                          <p className="font-bold">¿Tienes preguntas sobre nuestros Términos?</p>
+                          <p>Escríbenos directamente a nuestra línea de atención: WhatsApp +57 304 256 4311</p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* 5. POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (HABEAS DATA) */}
                 {activeModal === 'privacidad' && (
                   <>
-                    <div className="space-y-3 text-xs text-gray-600">
-                      <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Protección de Datos Personales</h4>
-                      <p>
-                        En <strong>MarFami</strong> nos tomamos muy en serio la privacidad y seguridad de tu información personal.
-                      </p>
-                      <p>
-                        Tus datos de contacto (nombre, teléfono de WhatsApp y dirección de entrega) son utilizados exclusivamente para la logística, despacho y facturación de tus pedidos.
-                      </p>
-                      <p>
-                        Jamás compartiremos o venderemos tus datos personales a terceros.
-                      </p>
+                    <div className="bg-blue-50/80 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
+                      <ShieldCheck className="h-5 w-5 text-brand-blue shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-bold text-brand-navy text-xs uppercase tracking-wider">Protección y Tratamiento de Datos Personales</h4>
+                        <p className="text-xs text-gray-600 mt-1">
+                          En cumplimiento de la <strong>Ley 1581 de 2012 de Habeas Data</strong> y decretos reglamentarios en Colombia, MarFami garantiza la reserva, seguridad y correcto uso de tus datos.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 text-xs text-gray-600">
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2">
+                        <h5 className="font-bold text-brand-navy uppercase">Responsable del Tratamiento</h5>
+                        <p>
+                          <strong>MarFami</strong>, ubicada en Jamundí, Valle del Cauca, Colombia. Canal de atención oficial WhatsApp: <strong>+57 304 256 4311</strong>.
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2">
+                        <h5 className="font-bold text-brand-navy uppercase">Datos Recolectados y Finalidad</h5>
+                        <p>
+                          Los datos de contacto y facturación (nombre completo, número de cédula, teléfono celular/WhatsApp, dirección de residencia o entrega y correo electrónico) son recolectados exclusivamente para:
+                        </p>
+                        <ul className="list-disc list-inside space-y-1 pl-1">
+                          <li>Procesar, despachar y entregar tus compras físicas o digitales.</li>
+                          <li>Emitir comprobantes y facturación de la transacción comercial.</li>
+                          <li>Ofrecer soporte de posventa, confirmación de envíos y atención de garantías o devoluciones.</li>
+                        </ul>
+                      </div>
+
+                      <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 text-emerald-900 space-y-2">
+                        <h5 className="font-bold uppercase">Garantía de Confidencialidad</h5>
+                        <p>
+                          MarFami <strong>no vende, alquila ni comparte</strong> tus datos personales con terceros para fines publicitarios externos o ajenos a la prestación directa del servicio solicitado.
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2">
+                        <h5 className="font-bold text-brand-navy uppercase">Derechos del Titular (Habeas Data)</h5>
+                        <p>
+                          Como titular de la información tienes derecho a conocer, actualizar, rectificar y solicitar la supresión de tus datos en cualquier momento escribiendo a nuestra línea oficial de WhatsApp (+57 304 256 4311).
+                        </p>
+                      </div>
                     </div>
                   </>
                 )}
@@ -428,6 +811,7 @@ export default function Footer({ onNavigateShop }: FooterProps) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-xs font-bold text-emerald-600 hover:text-emerald-700 transition"
                 >
+                  <Phone className="h-4 w-4" />
                   <span>¿Tienes dudas? Escríbenos por WhatsApp</span>
                 </a>
 
